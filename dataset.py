@@ -8,6 +8,7 @@ Created on Fri Mar 16 14:43:17 2018
 
 import numpy as np
 import scipy as sp
+from scipy import io as sio
 import os
 from keras.datasets import mnist
 
