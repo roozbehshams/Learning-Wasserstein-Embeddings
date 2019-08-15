@@ -86,11 +86,11 @@ def get_data(dataset_name='mnist', repo='data', labels=False):
             data_test = (X_train[i1_test], X_train[i2_test], emd_test, y_test[i1_test], y_test[i2_test])
 	
     if dataset_name==MNIST_8:
-        n = 28
+        n = 32
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
-        x_train = x_train[y_train==8]
+        x_train = np.pad(x_train[y_train==8], 2, 'constant') 
         y_train = y_train[y_train==8]
-        x_test = x_test[y_test==8]
+        x_test = np.pad(x_test[y_test==8], 2, 'constant') 
         y_test = y_test[y_test==8]
         
         X_train =x_train.reshape((len(x_train),-1))*1.0

@@ -1,10 +1,14 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Fri Mar 16 10:59:48 2018
 
 @author: mducoffe, rflammary, ncourty
 """
+import os
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID";
+os.environ["CUDA_VISIBLE_DEVICES"]="2";  
+
 from keras import backend as K
 from keras.models import Sequential,Model
 from keras.layers import Dense, Activation
