@@ -15,10 +15,12 @@ import scipy as sp
 import scipy.io as spio
 import ot
 import os
+from tqdm import tqdm
 
 from keras.datasets import mnist
 
 MNIST='mnist'
+MNIST_8='mnist8'
 REPO='data'
 CAT='cat'
 CRAB='crab'
@@ -28,7 +30,7 @@ REPO='data'
 
 def run_emd(dataset_name='mnist', train=True, n_pairwise=1000000, n_iter=1, n_proc=None):
     
-    assert dataset_name in [MNIST, CAT, CRAB, FACE], 'unknown dataset {}'.format(dataset_name)
+    assert dataset_name in [MNIST_8, MNIST, CAT, CRAB, FACE], 'unknown dataset {}'.format(dataset_name)
     
     if n_proc is None:
         import multiprocessing
@@ -43,6 +45,17 @@ def run_emd(dataset_name='mnist', train=True, n_pairwise=1000000, n_iter=1, n_pr
             xapp=x_train.reshape((len(x_train),-1))*1.0
         else:
             _, (x_test, _) = mnist.load_data()
+            xapp=x_test.reshape((len(x_test),-1))*1.0
+    
+    if dataset_name==MNIST_8:
+        n = 28
+        if train:
+            (x_train, y_train), (x_test, y_test) = mnist.load_data()
+            x_train = x_train[y_train==8]
+            xapp=x_train.reshape((len(x_train),-1))*1.0
+        else:
+            (x_train, y_train), (x_test, y_test) = mnist.load_data()
+            x_test = x_test[y_test==8]
             xapp=x_test.reshape((len(x_test),-1))*1.0
             
     if dataset_name in [CAT, CRAB, FACE]:
@@ -79,7 +92,7 @@ def run_emd(dataset_name='mnist', train=True, n_pairwise=1000000, n_iter=1, n_pr
     
     M=ot.dist(xy, xy)
         
-    for i in range(n_iter):
+    for i in tqdm(range(n_iter)):
         
         isource=np.random.randint(0,N,n_pairwise)
         itarget=np.random.randint(0,N,n_pairwise)
@@ -87,11 +100,22 @@ def run_emd(dataset_name='mnist', train=True, n_pairwise=1000000, n_iter=1, n_pr
             return ot.emd2(xapp[isource[i],:],xapp[itarget[i],:],M)
         
         ilist=range(n_pairwise)
-        D2=np.array(ot.utils.parmap(compute_emd,ilist,n_proc))
+        #D2=np.array(ot.utils.parmap(compute_emd,ilist,n_proc))
+        D2=np.array(list(map(compute_emd,ilist)))
         
         spio.savemat('{}/{}_{}_{}.mat'.format(REPO, dataset_name, 'train' if train else 'test', i),{'is':isource,'it':itarget,'D':D2})
         
 #%%
+def str2bool(v):
+    if isinstance(v, bool):
+       return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+		
 if __name__=="__main__":
     
     import argparse
@@ -99,12 +123,13 @@ if __name__=="__main__":
     parser.add_argument('--dataset_name', type=str, default='cat', help='dataset name')
     parser.add_argument('--n_pairwise', type=int, default=10000, help='number of pairwise emd')
     parser.add_argument('--n_iter', type=int, default=10, help='number of iterations')
-    parser.add_argument('--train', type=bool, default=True, help='number of iterations')
+    parser.add_argument('--train', type=str2bool, default=True, help='number of iterations')
     
     args = parser.parse_args()                                                                                                                                                                                                                             
     dataset_name=args.dataset_name
     n_pairwise=args.n_pairwise
     n_iter=args.n_iter
     train=args.train
+    print(train)
 
     run_emd(dataset_name, train, n_pairwise, n_iter)
