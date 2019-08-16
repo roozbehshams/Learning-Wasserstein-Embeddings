@@ -128,6 +128,7 @@ if __name__=="__main__":
     parser.add_argument('--embedding_size', type=int, default=50, help='embedding size')
     parser.add_argument('--batch_size', type=int, default=10)
     parser.add_argument('--epochs', type=int, default=1)
+    parser.add_argument('--image_size', type=int, default=32)
     
     
     args = parser.parse_args()                                                                                                                                                                                                                             
@@ -136,5 +137,6 @@ if __name__=="__main__":
     embedding_size=args.embedding_size
     batch_size=args.batch_size
     epochs=args.epochs
+    image_size=args.image_size
     
-    train_DWE(dataset_name, repo, embedding_size, batch_size=batch_size, epochs=epochs)
+    train_DWE(dataset_name, repo, embedding_size, batch_size=batch_size, epochs=epochs, image_shape=(image_size,image_size))
