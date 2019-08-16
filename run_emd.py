@@ -16,11 +16,12 @@ import scipy.io as spio
 import ot
 import os
 from tqdm import tqdm
+import parmap
 
 from keras.datasets import mnist
 
 MNIST='mnist'
-MNIST_8='mnist8'
+MNIST_N2='mnistN2'
 REPO='data'
 CAT='cat'
 CRAB='crab'
@@ -30,7 +31,7 @@ REPO='data'
 
 def run_emd(dataset_name='mnist', train=True, n_pairwise=1000000, n_iter=1, n_proc=None):
     
-    assert dataset_name in [MNIST_8, MNIST, CAT, CRAB, FACE], 'unknown dataset {}'.format(dataset_name)
+    assert dataset_name in [MNIST_N2, MNIST, CAT, CRAB, FACE], 'unknown dataset {}'.format(dataset_name)
     
     if n_proc is None:
         import multiprocessing
@@ -47,15 +48,16 @@ def run_emd(dataset_name='mnist', train=True, n_pairwise=1000000, n_iter=1, n_pr
             _, (x_test, _) = mnist.load_data()
             xapp=x_test.reshape((len(x_test),-1))*1.0
     
-    if dataset_name==MNIST_8:
-        n = 28
+    if dataset_name==MNIST_N2:
+        n = 32
         if train:
             (x_train, y_train), (x_test, y_test) = mnist.load_data()
-            x_train = x_train[y_train==8]
+            x_train =  np.pad(x_train[y_train!=2], [[0,0],[2,2],[2,2]], 'constant')
+            print(x_train.shape)
             xapp=x_train.reshape((len(x_train),-1))*1.0
         else:
             (x_train, y_train), (x_test, y_test) = mnist.load_data()
-            x_test = x_test[y_test==8]
+            x_test =  np.pad(x_test[y_test!=2], [[0,0],[2,2],[2,2]], 'constant')
             xapp=x_test.reshape((len(x_test),-1))*1.0
             
     if dataset_name in [CAT, CRAB, FACE]:
@@ -96,16 +98,17 @@ def run_emd(dataset_name='mnist', train=True, n_pairwise=1000000, n_iter=1, n_pr
         
         isource=np.random.randint(0,N,n_pairwise)
         itarget=np.random.randint(0,N,n_pairwise)
-        def compute_emd(i):
-            return ot.emd2(xapp[isource[i],:],xapp[itarget[i],:],M)
+        
         
         ilist=range(n_pairwise)
-        #D2=np.array(ot.utils.parmap(compute_emd,ilist,n_proc))
-        D2=np.array(list(map(compute_emd,ilist)))
-        
+        #D2=np.array(ot.utils.parmap(compute_emd,ilist,n_proc))        
+        #D2=np.array(list(map(compute_emd,ilist)))
+        D2=np.array((parmap.map(compute_emd,ilist, xapp, isource, itarget, M)))        
         spio.savemat('{}/{}_{}_{}.mat'.format(REPO, dataset_name, 'train' if train else 'test', i),{'is':isource,'it':itarget,'D':D2})
         
-#%%
+def compute_emd(i,xapp, isource, itarget, M):
+            return ot.emd2(xapp[isource[i],:],xapp[itarget[i],:],M)
+        #%%
 def str2bool(v):
     if isinstance(v, bool):
        return v

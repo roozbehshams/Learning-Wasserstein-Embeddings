@@ -14,7 +14,7 @@ from keras.datasets import mnist
 
 #%%
 MNIST='mnist'
-MNIST_8='mnist8'
+MNIST_N2='mnistN2'
 CAT='cat'
 CRAB='crab'
 FACE='face'
@@ -51,7 +51,7 @@ def get_pairwise_index(dataset_name='mnist',repo='data', train=True):
 #%%
 def get_data(dataset_name='mnist', repo='data', labels=False):
     
-    assert dataset_name in [MNIST_8,MNIST, CAT, CRAB, FACE], 'unknown dataset {}'.format(dataset_name)
+    assert dataset_name in [MNIST_N2,MNIST, CAT, CRAB, FACE], 'unknown dataset {}'.format(dataset_name)
     
     if dataset_name==MNIST:
         n = 28
@@ -85,13 +85,13 @@ def get_data(dataset_name='mnist', repo='data', labels=False):
                           y_train[i1_train[n_train:]], y_train[i2_train[n_train:]])
             data_test = (X_train[i1_test], X_train[i2_test], emd_test, y_test[i1_test], y_test[i2_test])
 	
-    if dataset_name==MNIST_8:
+    if dataset_name==MNIST_N2:
         n = 32
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
-        x_train = np.pad(x_train[y_train==8], 2, 'constant') 
-        y_train = y_train[y_train==8]
-        x_test = np.pad(x_test[y_test==8], 2, 'constant') 
-        y_test = y_test[y_test==8]
+        x_train =  np.pad(x_train[y_train!=2], [[0,0],[2,2],[2,2]], 'constant') 
+        y_train = y_train[y_train!=2]
+        x_test =  np.pad(x_test[y_test!=2], [[0,0],[2,2],[2,2]], 'constant') 
+        y_test = y_test[y_test!=2]
         
         X_train =x_train.reshape((len(x_train),-1))*1.0
         # normalize each sample
