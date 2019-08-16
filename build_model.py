@@ -92,6 +92,10 @@ def train_DWE(dataset_name=MNIST, repo=REPO, embedding_size=50, image_shape=(28,
     train, valid, test=get_data(dataset_name, repo)
     dict_models=build_model(image_shape, embedding_size)
     
+    if not os.path.exists('models'):
+        os.makedirs('models')
+    
+    
     model = dict_models['dwe']
     
     n_train=len(train[0])

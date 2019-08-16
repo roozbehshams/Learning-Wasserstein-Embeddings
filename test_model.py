@@ -6,6 +6,7 @@ Created on Fri Mar 16 14:40:34 2018
 @author: mducoffe, rflammary, ncourty
 """
 #%%
+import os
 import numpy as np
 import pylab as pl
 import scipy as sp
@@ -79,6 +80,9 @@ def get_MSE(dataset_name, emd, repo):
             yp_90[j]=np.nan
     print('MSE={}\nRel MSE={}\nr={}\nEMD/s={}'.format(err,errr,r,ytest_pred.shape[0]/t_est))
     
+    if not os.path.exists('imgs'):
+        os.makedirs('imgs')
+        
     pl.figure(1,(8,3))
     pl.clf()
     pl.plot([0,45],[0,45],'k')
