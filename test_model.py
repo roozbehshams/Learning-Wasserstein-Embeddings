@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Fri Mar 16 14:40:34 2018
@@ -11,9 +11,7 @@ import numpy as np
 import pylab as pl
 import scipy as sp
 import ot
-
 from keras.models import load_model
-
 from dataset import get_data, MNIST, REPO
 from build_model import MODEL
 #%%
@@ -22,9 +20,10 @@ def compute(method_name, dataset_name=MNIST, repo=REPO):
     assert method_name.upper() in ['MSE', 'BARYCENTER', 'PCA', 'INTERPOLATION'], 'unknown method {}'.format(method_name)
     
     if method_name=='MSE':
-        emd = load_model('{}/{}_{}.hd5'.format(MODEL, dataset_name, 'emd'))
+        model_path = os.path.join(MODEL , dataset_name + "_emd.hd5")
+        emd = load_model(model_path)
         get_MSE(dataset_name, emd,repo)
-        
+    #TODO: write the other load_model paths with path.join()
     if method_name=='BARYCENTER':
         feat = load_model('{}/{}_{}.hd5'.format(MODEL, dataset_name, 'feat'))
         unfeat = load_model('{}/{}_{}.hd5'.format(MODEL, dataset_name, 'unfeat'))
@@ -244,6 +243,7 @@ def bilinear_interpolation(dataset_name, feat, unfeat, repo, nbt=3):
             
             
 #%%
+
 if __name__=="__main__":
     import argparse
     parser = argparse.ArgumentParser(description='Dataset')
@@ -251,6 +251,7 @@ if __name__=="__main__":
     parser.add_argument('--method_name', type=str, default='INTERPOLATION', help='number of pairwise emd')
     parser.add_argument('--repo', type=str, default=REPO, help='number of iterations')
     
+    print('we out here')
     args = parser.parse_args()                                                                                                                                                                                                                             
     dataset_name=args.dataset_name
     method_name=args.method_name

@@ -77,13 +77,13 @@ def get_data(dataset_name='mnist', repo='data', labels=False):
         if not(labels):
             data_train = (X_train[i1_train[:n_train]], X_train[i2_train[:n_train]], emd_train[:n_train])
             data_valid = (X_train[i1_train[n_train:]], X_train[i2_train[n_train:]], emd_train[n_train:])
-            data_test = (X_train[i1_test], X_train[i2_test], emd_test)
+            data_test = (X_test[i1_test], X_test[i2_test], emd_test)
         else:
             data_train = (X_train[i1_train[:n_train]], X_train[i2_train[:n_train]], emd_train[:n_train], \
                           y_train[i1_train[:n_train]], y_train[i2_train[:n_train]])
             data_valid = (X_train[i1_train[n_train:]], X_train[i2_train[n_train:]], emd_train[n_train:], \
                           y_train[i1_train[n_train:]], y_train[i2_train[n_train:]])
-            data_test = (X_train[i1_test], X_train[i2_test], emd_test, y_test[i1_test], y_test[i2_test])
+            data_test = (X_test[i1_test], X_test[i2_test], emd_test, y_test[i1_test], y_test[i2_test])
 	
     if dataset_name==MNIST_N2:
         n = 32
@@ -113,13 +113,13 @@ def get_data(dataset_name='mnist', repo='data', labels=False):
         if not(labels):
             data_train = (X_train[i1_train[:n_train]], X_train[i2_train[:n_train]], emd_train[:n_train])
             data_valid = (X_train[i1_train[n_train:]], X_train[i2_train[n_train:]], emd_train[n_train:])
-            data_test = (X_train[i1_test], X_train[i2_test], emd_test)
+            data_test = (X_test[i1_test], X_test[i2_test], emd_test)
         else:
             data_train = (X_train[i1_train[:n_train]], X_train[i2_train[:n_train]], emd_train[:n_train], \
                           y_train[i1_train[:n_train]], y_train[i2_train[:n_train]])
             data_valid = (X_train[i1_train[n_train:]], X_train[i2_train[n_train:]], emd_train[n_train:], \
                           y_train[i1_train[n_train:]], y_train[i2_train[n_train:]])
-            data_test = (X_train[i1_test], X_train[i2_test], emd_test, y_test[i1_test], y_test[i2_test])
+            data_test = (X_test[i1_test], X_test[i2_test], emd_test, y_test[i1_test], y_test[i2_test])
             
     if dataset_name in [CAT, CRAB, FACE]:
         n=28

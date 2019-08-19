@@ -101,7 +101,8 @@ def train_DWE(dataset_name=MNIST, repo=REPO, embedding_size=50, image_shape=(28,
     n_train=len(train[0])
     steps_per_epoch=int(n_train/batch_size)
     earlystop=EarlyStopping(monitor='val_loss', patience=3, verbose=1, mode='auto')
-    saveweights=ModelCheckpoint(r'{}\{}_autoencoder.h5'.format(MODEL,dataset_name), monitor='val_loss', verbose=0, save_best_only=True, mode='auto')
+    model_path = os.path.join(MODEL, dataset_name + "_autoencoder.hd5")
+    saveweights=ModelCheckpoint(model_path, monitor='val_loss', verbose=0, save_best_only=True, mode='auto')
 
     validation_data=([valid[0],valid[1]],[valid[2], valid[0], valid[1], valid[0], valid[1]])
     test_data=([test[0],test[1]],[test[2], test[0], test[1], test[0], test[1]])
@@ -132,7 +133,7 @@ if __name__=="__main__":
     parser.add_argument('--embedding_size', type=int, default=50, help='embedding size')
     parser.add_argument('--batch_size', type=int, default=10)
     parser.add_argument('--epochs', type=int, default=1)
-    parser.add_argument('--image_size', type=int, default=32)
+    parser.add_argument('--image_size', type=int, default=28)
     
     
     args = parser.parse_args()                                                                                                                                                                                                                             
