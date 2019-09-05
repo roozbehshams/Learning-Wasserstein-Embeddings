@@ -11,8 +11,10 @@ import scipy as sp
 from scipy import io as sio
 import os
 from keras.datasets import mnist
+import h5py
 
 #%%
+FMNIST = 'synth-fmnist'
 MNIST='mnist'
 MNIST_N2='mnistN2'
 CAT='cat'
@@ -51,8 +53,52 @@ def get_pairwise_index(dataset_name='mnist',repo='data', train=True):
 #%%
 def get_data(dataset_name='mnist', repo='data', labels=False):
     
-    assert dataset_name in [MNIST_N2,MNIST, CAT, CRAB, FACE], 'unknown dataset {}'.format(dataset_name)
-    
+    assert dataset_name in [FMNIST, MNIST_N2, MNIST, CAT, CRAB, FACE], 'unknown dataset {}'.format(dataset_name)
+
+    if dataset_name == FMNIST:
+        n = 32
+        syn_fmnist_h5 = h5py.File('synth-deform-fmnist.hd5')
+
+        X_train=[]
+        X_test = []
+
+
+        # Reading data from h5 file
+        X_train.append(syn_fmnist_h5['train/fixed'].value)
+        X_train.append(syn_fmnist_h5['train/moving'].value)
+        Y_train = syn_fmnist_h5['train/wass_distance'].value
+
+
+        X_test.append(syn_fmnist_h5['test/fixed'].value)
+        X_test.append(syn_fmnist_h5['test/moving'].value)
+        Y_test = syn_fmnist_h5['test/wass_distance'].value
+
+        # Normalize each sample
+        X_train[0] = X_train[0].reshape((len(X_train[0]), -1)) * 1.0
+        X_train[1] = X_train[1].reshape((len(X_train[1]), -1)) * 1.0
+        X_train[0] /= X_train[0].sum(1).reshape((-1, 1))
+        X_train[1] /= X_train[1].sum(1).reshape((-1, 1))
+
+        X_test[0] = X_test[0].reshape((len(X_test[0]), -1)) * 1.0
+        X_test[1] = X_test[1].reshape((len(X_test[1]), -1)) * 1.0
+        X_test[0] /= X_test[0].sum(1).reshape((-1, 1))
+        X_test[1] /= X_test[1].sum(1).reshape((-1, 1))
+
+        # Reshaping to original shape
+        X_train[0] = X_train[0].reshape((-1, 1, n, n))
+        X_train[1] = X_train[1].reshape((-1, 1, n, n))
+
+        X_test[0] = X_test[0].reshape((-1, 1, n, n))
+        X_test[1] = X_test[1].reshape((-1, 1, n, n))
+
+
+        N = len(X_train[0])
+        n_train = (int)(0.8 * N)
+
+        data_train = (X_train[0][:n_train], X_train[1][:n_train], Y_train[:n_train])
+        data_valid = (X_train[0][n_train:], X_train[1][n_train:], Y_train[n_train:])
+        data_test = (X_test[0], X_test[1], Y_test)
+
     if dataset_name==MNIST:
         n = 28
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
