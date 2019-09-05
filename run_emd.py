@@ -95,21 +95,25 @@ def run_emd_earthbender(dataset_name='fmnist', train=True, n_pairwise=1000000, n
 
             M = ot.dist(xy, xy)
 
-            ilist = range(len(x_train_vec))
+            ilist_train = range(len(x_train_vec))
+            ilist_test = range(len(x_test_vec))
 
 
-            emdist = parmap.map(compute_emd_earth_bender, ilist, x_train_vec, x_train_transformed_vec, M, pm_pbar=True, pm_pool=pool,
+            emdist_train = parmap.map(compute_emd_earth_bender, ilist_train, x_train_vec, x_train_transformed_vec, M, pm_pbar=True, pm_pool=pool,
                                             pm_chunksize=50)
+            emdist_test = parmap.map(compute_emd_earth_bender, ilist_test, x_test_vec, x_test_transformed_vec, M,
+                                      pm_pbar=True, pm_pool=pool,
+                                      pm_chunksize=50)
 
             train_gr = h5_file.create_group('train')
             train_gr.create_dataset('fixed',data=x_train, dtype=np.uint8, compression="gzip")
             train_gr.create_dataset('moving', data=x_train_moving, dtype=np.uint8, compression="gzip")
-            train_gr.create_dataset('wass_distance', data=emdist, compression="gzip")
+            train_gr.create_dataset('wass_distance', data=emdist_train, compression="gzip")
 
             test_gr = h5_file.create_group('test')
             test_gr.create_dataset('fixed', data=x_test, dtype=np.uint8, compression="gzip")
             test_gr.create_dataset('moving', data=x_test_moving, dtype=np.uint8, compression="gzip")
-            test_gr.create_dataset('wass_distance', data=emdist, compression="gzip")
+            test_gr.create_dataset('wass_distance', data=emdist_test, compression="gzip")
 
             h5_file.close()
 
