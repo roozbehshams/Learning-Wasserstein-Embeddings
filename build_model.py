@@ -102,8 +102,8 @@ def train_DWE(dataset_name=MNIST, repo=REPO, embedding_size=50, image_shape=(28,
     n_train=len(train[0])
     steps_per_epoch=int(n_train/batch_size)
     earlystop=EarlyStopping(monitor='val_loss', patience=3, verbose=1, mode='auto')
-    tb_callback = TensorBoard(log_dir='.logs', histogram_freq=1, batch_size=1, write_graph=True,
-                                                 write_grads=True,
+    tb_callback = TensorBoard(log_dir='.logs', histogram_freq=1, batch_size=batch_size, write_graph=True,
+                                                 write_grads=False,
                                                  write_images=True, embeddings_freq=0, embeddings_layer_names=True,
                                                  embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
     model_path = os.path.join(MODEL, dataset_name + "_autoencoder.hd5")
