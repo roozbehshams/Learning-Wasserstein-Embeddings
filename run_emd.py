@@ -47,7 +47,7 @@ def run_emd_earthbender(dataset_name='fmnist', train=True, n_pairwise=1000000, n
 
     if dataset_name==FMNIST:
         n = 32
-        h5_file = h5py.File('synth-deform-fmnist.h5', 'w')
+        h5_file = h5py.File('synth-deform-fmnist_inprogress.h5', 'w')
 
         #(x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
         h5_fmnist = h5py.File('fashion_mnist.h5')
@@ -61,7 +61,7 @@ def run_emd_earthbender(dataset_name='fmnist', train=True, n_pairwise=1000000, n
         x_test = np.pad(x_test, [[0, 0], [2, 2], [2, 2]], 'constant')
 
         x_train_vec = (x_train.reshape((len(x_train), -1))).astype(float)
-        x_test_vec = (x_train.reshape((len(x_test), -1))).astype(float)
+        x_test_vec = (x_test.reshape((len(x_test), -1))).astype(float)
 
         x_train_vec /= x_train_vec.sum(1).reshape((-1, 1))
         x_test_vec /= x_test_vec.sum(1).reshape((-1, 1))
